@@ -1,56 +1,83 @@
-# Welcome to your Expo app 👋
+# Mise
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Mise is a phone-first restaurant menu reconciliation prototype. It helps an owner or manager review inconsistencies across Counter, Uber Eats, and Skip.
 
-## Get started
+The current repository contains the UI prototype and the first REST API boundary. CSV scanning, reconciliation rules, PostgreSQL persistence, and forecasting are intentionally not connected yet.
 
-1. Install dependencies
+## Prerequisites
 
-   ```bash
-   npm install
-   ```
+- Node.js 20 or newer
+- npm
+- Python 3.11 or newer for the optional API
+- Expo Go on a phone if testing the native preview
 
-2. Start the app
+## Run the UI prototype
 
-   ```bash
-   npx expo start
-   ```
+From the repository root:
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```powershell
+npm install
+npm run web -- --port 8082
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Open `http://localhost:8082` in a browser. The web prototype has three visible screens:
 
-### Other setup steps
+- `Issues`: main review queue and workflow status
+- `Margins`: channel price, commission, net revenue, and margin statistics
+- `Ingredients`: menu items using an ingredient and their estimated margin
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+To preview on a phone with Expo Go:
 
-## Learn more
+```powershell
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Scan the QR code from the same Wi-Fi network.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Run the optional API
 
-## Join the community
+Open a second terminal:
 
-Join our community of developers creating universal apps.
+```powershell
+Set-Location backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+The API runs at `http://localhost:8000`; documentation is available at `http://localhost:8000/docs`.
+
+The frontend currently uses local mock data. When API integration is enabled, set the API base URL before starting Expo:
+
+```powershell
+$env:EXPO_PUBLIC_API_URL = "http://localhost:8000"
+npm run web -- --port 8082
+```
+
+## Project structure
+
+```text
+src/app/              Expo Router screens
+src/components/       Shared navigation and UI components
+src/lib/api.ts        Typed REST client boundary
+backend/app/main.py   FastAPI endpoints and temporary fixtures
+backend/app/          CSV reconciliation entry point
+```
+
+## Planned workflow
+
+```text
+Capture CSV files
+  -> Normalize menu data
+  -> Reconcile Counter / Uber Eats / Skip
+  -> Create issues and recommendations
+  -> Owner reviews and approves
+  -> Store snapshots and decisions in PostgreSQL
+```
+
+## Validation
+
+```powershell
+.\node_modules\.bin\tsc.cmd --noEmit
+```
