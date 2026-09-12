@@ -1,180 +1,97 @@
-import { Image } from 'expo-image';
-import { SymbolView } from 'expo-symbols';
-import { Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ExternalLink } from '@/components/external-link';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Collapsible } from '@/components/ui/collapsible';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+const channels = [
+  ['Counter', '$15.00', '0%', '$15.00', '68%'],
+  ['Skip', '$15.00', '8%', '$14.55', '67%'],
+  ['Uber Eats', '$17.00', '25%', '$12.75', '62%'],
+];
 
-export default function TabTwoScreen() {
-  const safeAreaInsets = useSafeAreaInsets();
-  const insets = {
-    ...safeAreaInsets,
-    bottom: safeAreaInsets.bottom + BottomTabInset + Spacing.three,
-  };
-  const theme = useTheme();
-
-  const contentPlatformStyle = Platform.select({
-    android: {
-      paddingTop: insets.top,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-      paddingBottom: insets.bottom,
-    },
-    web: {
-      paddingTop: Spacing.six,
-      paddingBottom: Spacing.four,
-    },
-  });
-
+export default function MarginsScreen() {
   return (
-    <ScrollView
-      style={[styles.scrollView, { backgroundColor: theme.background }]}
-      contentInset={insets}
-      contentContainerStyle={[styles.contentContainer, contentPlatformStyle]}>
-      <ThemedView style={styles.container}>
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="subtitle">Explore</ThemedText>
-          <ThemedText style={styles.centerText} themeColor="textSecondary">
-            This starter app includes example{'\n'}code to help you get started.
-          </ThemedText>
-
-          <ExternalLink href="https://docs.expo.dev" asChild>
-            <Pressable style={({ pressed }) => pressed && styles.pressed}>
-              <ThemedView type="backgroundElement" style={styles.linkButton}>
-                <ThemedText type="link">Expo documentation</ThemedText>
-                <SymbolView
-                  tintColor={theme.text}
-                  name={{ ios: 'arrow.up.right.square', android: 'link', web: 'link' }}
-                  size={12}
-                />
-              </ThemedView>
-            </Pressable>
-          </ExternalLink>
-        </ThemedView>
-
-        <ThemedView style={styles.sectionsWrapper}>
-          <Collapsible title="File-based routing">
-            <ThemedText type="small">
-              This app has two screens: <ThemedText type="code">src/app/index.tsx</ThemedText> and{' '}
-              <ThemedText type="code">src/app/explore.tsx</ThemedText>
-            </ThemedText>
-            <ThemedText type="small">
-              The layout file in <ThemedText type="code">src/app/_layout.tsx</ThemedText> sets up
-              the tab navigator.
-            </ThemedText>
-            <ExternalLink href="https://docs.expo.dev/router/introduction">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
-
-          <Collapsible title="Android, iOS, and web support">
-            <ThemedView type="backgroundElement" style={styles.collapsibleContent}>
-              <ThemedText type="small">
-                You can open this project on Android, iOS, and the web. To open the web version,
-                press <ThemedText type="smallBold">w</ThemedText> in the terminal running this
-                project.
-              </ThemedText>
-              <Image
-                source={require('@/assets/images/tutorial-web.png')}
-                style={styles.imageTutorial}
-              />
-            </ThemedView>
-          </Collapsible>
-
-          <Collapsible title="Images">
-            <ThemedText type="small">
-              For static images, you can use the <ThemedText type="code">@2x</ThemedText> and{' '}
-              <ThemedText type="code">@3x</ThemedText> suffixes to provide files for different
-              screen densities.
-            </ThemedText>
-            <Image source={require('@/assets/images/react-logo.png')} style={styles.imageReact} />
-            <ExternalLink href="https://reactnative.dev/docs/images">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
-
-          <Collapsible title="Light and dark mode components">
-            <ThemedText type="small">
-              This template has light and dark mode support. The{' '}
-              <ThemedText type="code">useColorScheme()</ThemedText> hook lets you inspect what the
-              user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-            </ThemedText>
-            <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
-
-          <Collapsible title="Animations">
-            <ThemedText type="small">
-              This template includes an example of an animated component. The{' '}
-              <ThemedText type="code">src/components/ui/collapsible.tsx</ThemedText> component uses
-              the powerful <ThemedText type="code">react-native-reanimated</ThemedText> library to
-              animate opening this hint.
-            </ThemedText>
-          </Collapsible>
-        </ThemedView>
-        {Platform.OS === 'web' && <WebBadge />}
-      </ThemedView>
-    </ScrollView>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <Text style={styles.brand}>MISE</Text>
+        <Text style={styles.workspace}>Noelle&apos;s Cafe</Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <Text style={styles.back}>‹ Back</Text>
+        <Text style={styles.eyebrow}>MENU SYNC GUARD</Text>
+        <Text style={styles.title}>Avocado on Sourdough</Text>
+        <Text style={styles.subtitle}>Channel margins (illustrative)</Text>
+        <View style={styles.table}>
+          <View style={styles.tableHeader}>
+            <Text style={[styles.headerText, styles.channelColumn]}>CHANNEL</Text>
+            <Text style={styles.headerText}>PRICE</Text>
+            <Text style={styles.headerText}>COMM.</Text>
+            <Text style={styles.headerText}>NET</Text>
+            <Text style={styles.headerText}>MARGIN</Text>
+          </View>
+          {channels.map(([channel, price, commission, net, margin]) => (
+            <View style={[styles.row, channel === 'Uber Eats' && styles.warningRow]} key={channel}>
+              <Text style={[styles.cell, styles.channelColumn, channel !== 'Counter' && styles.channelStrong]}>{channel}</Text>
+              <Text style={styles.cell}>{price}</Text>
+              <Text style={styles.cell}>{commission}</Text>
+              <Text style={styles.cell}>{net}</Text>
+              <Text style={[styles.cell, styles.marginCell, channel === 'Uber Eats' && styles.warningText]}>{margin}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={styles.alertCard}>
+          <Text style={styles.alertTitle}>Uber Eats has the lowest margin</Text>
+          <Text style={styles.alertDetail}>25% commission reduces net revenue by $2.25 per item.</Text>
+        </View>
+        <View style={styles.recommendationCard}>
+          <Text style={styles.recommendationLabel}>RECOMMENDATION</Text>
+          <Text style={styles.recommendationTitle}>Raise Eats to $19.20</Text>
+          <Text style={styles.recommendationDetail}>Holds roughly 67% margin after 25% commission.</Text>
+          <View style={styles.buttonRow}>
+            <Pressable style={styles.approveButton}><Text style={styles.approveText}>Approve</Text></Pressable>
+            <Pressable style={styles.dismissButton}><Text style={styles.dismissText}>Dismiss</Text></Pressable>
+          </View>
+        </View>
+        <View style={styles.mutedCard}>
+          <Text style={styles.mutedTitle}>CONTEXT NEEDED</Text>
+          <Text style={styles.mutedDetail}>Cost estimate: $4.50-$6.50. Add cost data to improve confidence.</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-  },
-  contentContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  container: {
-    maxWidth: MaxContentWidth,
-    flexGrow: 1,
-  },
-  titleContainer: {
-    gap: Spacing.three,
-    alignItems: 'center',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.six,
-  },
-  centerText: {
-    textAlign: 'center',
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  linkButton: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.five,
-    justifyContent: 'center',
-    gap: Spacing.one,
-    alignItems: 'center',
-  },
-  sectionsWrapper: {
-    gap: Spacing.five,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-  },
-  collapsibleContent: {
-    alignItems: 'center',
-  },
-  imageTutorial: {
-    width: '100%',
-    aspectRatio: 296 / 171,
-    borderRadius: Spacing.three,
-    marginTop: Spacing.two,
-  },
-  imageReact: {
-    width: 100,
-    height: 100,
-    alignSelf: 'center',
-  },
+  safeArea: { flex: 1, backgroundColor: '#F3F4F6' },
+  header: { backgroundColor: '#15283F', paddingHorizontal: 22, paddingTop: 14, paddingBottom: 16 },
+  brand: { color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 2.8 },
+  workspace: { color: '#D6DFEA', fontSize: 12, marginTop: 3 },
+  content: { padding: 18, paddingBottom: 32 },
+  back: { color: '#718096', fontSize: 12, marginBottom: 18 },
+  eyebrow: { color: '#718096', fontSize: 10, fontWeight: '700', letterSpacing: 1.2, marginBottom: 7 },
+  title: { color: '#15283F', fontSize: 25, fontWeight: '800' },
+  subtitle: { color: '#718096', fontSize: 13, marginTop: 4, marginBottom: 18 },
+  table: { backgroundColor: '#FFFFFF', borderRadius: 10, overflow: 'hidden' },
+  tableHeader: { backgroundColor: '#E6E9ED', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8, paddingVertical: 11 },
+  headerText: { color: '#526171', flex: 1, fontSize: 8, fontWeight: '800', letterSpacing: 0.3, textAlign: 'right' },
+  channelColumn: { flex: 1.45, textAlign: 'left' },
+  row: { borderTopWidth: 1, borderTopColor: '#EDF0F2', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8, paddingVertical: 13 },
+  warningRow: { backgroundColor: '#FFF0EE' },
+  cell: { color: '#25364A', flex: 1, fontSize: 10, textAlign: 'right' },
+  channelStrong: { fontWeight: '800', textAlign: 'left' },
+  marginCell: { color: '#247052', fontWeight: '800' },
+  warningText: { color: '#D7443E' },
+  alertCard: { backgroundColor: '#FCE8E5', borderColor: '#F2B6AE', borderRadius: 9, borderWidth: 1, padding: 14, marginTop: 14 },
+  alertTitle: { color: '#B53C35', fontSize: 13, fontWeight: '800' },
+  alertDetail: { color: '#8B5550', fontSize: 11, lineHeight: 16, marginTop: 5 },
+  recommendationCard: { backgroundColor: '#EAF5EF', borderColor: '#B9DCC8', borderRadius: 9, borderWidth: 1, padding: 14, marginTop: 10 },
+  recommendationLabel: { color: '#4F8B6D', fontSize: 9, fontWeight: '800', letterSpacing: 1 },
+  recommendationTitle: { color: '#247052', fontSize: 15, fontWeight: '800', marginTop: 5 },
+  recommendationDetail: { color: '#4F7561', fontSize: 11, marginTop: 4 },
+  buttonRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
+  approveButton: { backgroundColor: '#247052', borderRadius: 6, paddingHorizontal: 14, paddingVertical: 8 },
+  approveText: { color: '#FFFFFF', fontSize: 11, fontWeight: '800' },
+  dismissButton: { backgroundColor: '#FFFFFF', borderColor: '#B9DCC8', borderRadius: 6, borderWidth: 1, paddingHorizontal: 14, paddingVertical: 8 },
+  dismissText: { color: '#4F7561', fontSize: 11, fontWeight: '700' },
+  mutedCard: { borderColor: '#CBD3DB', borderRadius: 9, borderStyle: 'dashed', borderWidth: 1, padding: 14, marginTop: 10 },
+  mutedTitle: { color: '#788797', fontSize: 9, fontWeight: '800', letterSpacing: 1 },
+  mutedDetail: { color: '#8A96A5', fontSize: 11, lineHeight: 16, marginTop: 5 },
 });
