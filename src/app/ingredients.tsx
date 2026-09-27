@@ -1,15 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const ingredients = [
-  ['Cajun Chicken & Avocado Salad', '$20.00', '71%'],
-  ['Avocado on Sourdough', '$15.00', '68%'],
-  ['BLT', '$15.00', '64%'],
-  ['Veggie Breakfast', '$25.00', '61%'],
-  ['Salad, Cheese & Avocado sandwich', '$11.00', '58%'],
-  ['Avocado (side)', '$4.00', '55%'],
-];
-
 export default function IngredientsScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -18,28 +9,9 @@ export default function IngredientsScreen() {
         <Text style={styles.workspace}>Noelle&apos;s Cafe</Text>
       </View>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.eyebrow}>MENU COVERAGE</Text>
+        <Text style={styles.eyebrow}>FUTURE STAGE</Text>
         <Text style={styles.title}>Ingredients</Text>
-        <Text style={styles.subtitle}>Used in 6 dishes across your menu</Text>
-        <View style={styles.table}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.headerText}>MENU ITEM</Text>
-            <Text style={styles.headerText}>EST. MARGIN</Text>
-          </View>
-          {ingredients.map(([name, price, margin]) => (
-            <View style={styles.row} key={name}>
-              <View style={styles.itemCopy}>
-                <Text style={styles.itemName}>{name}</Text>
-                <Text style={styles.price}>{price}</Text>
-              </View>
-              <Text style={styles.margin}>{margin}</Text>
-            </View>
-          ))}
-        </View>
-        <View style={styles.emptyAction}>
-          <Text style={styles.emptyTitle}>Create promotion</Text>
-          <Text style={styles.emptySubtitle}>Available from stage four</Text>
-        </View>
+        <Text style={styles.subtitle}>This feature is planned for a future stage.</Text>
       </ScrollView>
     </SafeAreaView>
   );

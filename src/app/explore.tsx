@@ -1,12 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const channels = [
-  ['Counter', '$15.00', '0%', '$15.00', '68%'],
-  ['Skip', '$15.00', '8%', '$14.55', '67%'],
-  ['Uber Eats', '$17.00', '25%', '$12.75', '62%'],
-];
-
 export default function MarginsScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -15,45 +9,9 @@ export default function MarginsScreen() {
         <Text style={styles.workspace}>Noelle&apos;s Cafe</Text>
       </View>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.back}>‹ Back</Text>
-        <Text style={styles.eyebrow}>MENU SYNC GUARD</Text>
-        <Text style={styles.title}>Avocado on Sourdough</Text>
-        <Text style={styles.subtitle}>Channel margins (illustrative)</Text>
-        <View style={styles.table}>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.headerText, styles.channelColumn]}>CHANNEL</Text>
-            <Text style={styles.headerText}>PRICE</Text>
-            <Text style={styles.headerText}>COMM.</Text>
-            <Text style={styles.headerText}>NET</Text>
-            <Text style={styles.headerText}>MARGIN</Text>
-          </View>
-          {channels.map(([channel, price, commission, net, margin]) => (
-            <View style={[styles.row, channel === 'Uber Eats' && styles.warningRow]} key={channel}>
-              <Text style={[styles.cell, styles.channelColumn, channel !== 'Counter' && styles.channelStrong]}>{channel}</Text>
-              <Text style={styles.cell}>{price}</Text>
-              <Text style={styles.cell}>{commission}</Text>
-              <Text style={styles.cell}>{net}</Text>
-              <Text style={[styles.cell, styles.marginCell, channel === 'Uber Eats' && styles.warningText]}>{margin}</Text>
-            </View>
-          ))}
-        </View>
-        <View style={styles.alertCard}>
-          <Text style={styles.alertTitle}>Uber Eats has the lowest margin</Text>
-          <Text style={styles.alertDetail}>25% commission reduces net revenue by $2.25 per item.</Text>
-        </View>
-        <View style={styles.recommendationCard}>
-          <Text style={styles.recommendationLabel}>RECOMMENDATION</Text>
-          <Text style={styles.recommendationTitle}>Raise Eats to $19.20</Text>
-          <Text style={styles.recommendationDetail}>Holds roughly 67% margin after 25% commission.</Text>
-          <View style={styles.buttonRow}>
-            <Pressable style={styles.approveButton}><Text style={styles.approveText}>Approve</Text></Pressable>
-            <Pressable style={styles.dismissButton}><Text style={styles.dismissText}>Dismiss</Text></Pressable>
-          </View>
-        </View>
-        <View style={styles.mutedCard}>
-          <Text style={styles.mutedTitle}>CONTEXT NEEDED</Text>
-          <Text style={styles.mutedDetail}>Cost estimate: $4.50-$6.50. Add cost data to improve confidence.</Text>
-        </View>
+        <Text style={styles.eyebrow}>FUTURE STAGE</Text>
+        <Text style={styles.title}>Margins</Text>
+        <Text style={styles.subtitle}>This feature is planned for a future stage.</Text>
       </ScrollView>
     </SafeAreaView>
   );
