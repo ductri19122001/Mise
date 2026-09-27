@@ -6,7 +6,7 @@ import {
   TabTriggerSlotProps,
   TabListProps,
 } from 'expo-router/ui';
-import { Pressable, View, StyleSheet } from 'react-native';
+import { Pressable, View, StyleSheet, useWindowDimensions } from 'react-native';
 
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
@@ -35,11 +35,13 @@ export default function AppTabs() {
 }
 
 export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps) {
+  const compact = useWindowDimensions().width < 520;
+
   return (
     <Pressable {...props} style={({ pressed }) => pressed && styles.pressed}>
       <ThemedView
         type={isFocused ? 'backgroundSelected' : 'backgroundElement'}
-        style={styles.tabButtonView}>
+        style={[styles.tabButtonView, compact && styles.compactTabButtonView]}>
         <ThemedText type="small" themeColor={isFocused ? 'text' : 'textSecondary'}>
           {children}
         </ThemedText>
@@ -49,12 +51,16 @@ export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps
 }
 
 export function CustomTabList(props: TabListProps) {
+  const compact = useWindowDimensions().width < 520;
+
   return (
     <View {...props} style={styles.tabListContainer}>
-      <ThemedView type="backgroundElement" style={styles.innerContainer}>
-        <ThemedText type="smallBold" style={styles.brandText}>
-          MISE · NOELLE&apos;S CAFE
-        </ThemedText>
+      <ThemedView type="backgroundElement" style={[styles.innerContainer, compact && styles.compactInnerContainer]}>
+        {!compact && (
+          <ThemedText type="smallBold" style={styles.brandText}>
+            MISE · NOEL&apos;S CAFE
+          </ThemedText>
+        )}
 
         {props.children}
       </ThemedView>
@@ -78,11 +84,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flexGrow: 1,
+    flexShrink: 1,
+    minWidth: 0,
     gap: Spacing.two,
     maxWidth: MaxContentWidth,
   },
   brandText: {
     marginRight: 'auto',
+  },
+  compactInnerContainer: {
+    paddingHorizontal: Spacing.two,
+    justifyContent: 'space-around',
+    gap: Spacing.one,
   },
   pressed: {
     opacity: 0.7,
@@ -91,5 +104,8 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.one,
     paddingHorizontal: Spacing.three,
     borderRadius: Spacing.three,
+  },
+  compactTabButtonView: {
+    paddingHorizontal: Spacing.two,
   },
 });

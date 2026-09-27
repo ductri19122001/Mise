@@ -3,45 +3,17 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import MenuImportScreen from '@/components/menu-import-screen';
+import DefectDetail from '@/components/defect-detail';
+import type { Defect, DefectStatus, ReconciliationReport } from '@/types/reconciliation';
 
-type Issue = {
-  severity: 'high' | 'medium' | 'low';
-  amount: string;
-  title: string;
-  detail: string;
-  action: string;
+const defectNames: Record<Defect['defectType'], string> = {
+  MISSING_LISTING: 'Missing listing',
+  PRICE_MISMATCH: 'Price mismatch',
+  DESCRIPTION_MISMATCH: 'Description mismatch',
+  ADD_ON_MISMATCH: 'Add-on mismatch',
+  AVAILABILITY_MISMATCH: 'Availability mismatch',
 };
-
-const issues: Issue[] = [
-  {
-    severity: 'high',
-    amount: '-$4,500/yr',
-    title: '3 items missing from both digital menus',
-    detail: 'Bacon, avocado, halloumi + 7 more',
-    action: 'Review items',
-  },
-  {
-    severity: 'medium',
-    amount: '-$2,800/yr',
-    title: 'Large coffee size not available on Skip',
-    detail: 'Counter $4.80 / $5.50',
-    action: 'Compare channels',
-  },
-  {
-    severity: 'medium',
-    amount: '-$2,250/yr',
-    title: 'Fillet Steak cheaper on Uber Eats',
-    detail: 'Counter $27.00 · Uber Eats $26.00',
-    action: 'Fix pricing',
-  },
-  {
-    severity: 'low',
-    amount: 'Customer-facing error',
-    title: 'Tuna Salad described as containing ham on Skip',
-    detail: 'Counter: tuna & poached egg · Skip: ham & poached egg',
-    action: 'Mark fixed',
-  },
-];
 
 const severityColor = {
   high: '#D7443E',
@@ -50,7 +22,20 @@ const severityColor = {
 };
 
 export default function HomeScreen() {
-  const [resolved, setResolved] = useState<string[]>([]);
+  const [report, setReport] = useState<ReconciliationReport | null>(null);
+  const [screen, setScreen] = useState<'issues' | 'import' | 'detail'>('issues');
+  const [activeDefectId, setActiveDefectId] = useState<string | null>(null);
+  const issuesNeedingAttention = report?.defects.filter((defect) => defect.status === 'open').length ?? 0;
+  const activeDefect = report?.defects.find((defect) => defect.id === activeDefectId);
+
+  function updateDefectStatus(defectId: string, status: Exclude<DefectStatus, 'open'>) {
+    setReport((current) => {
+      if (!current) return current;
+      const defects = current.defects.map((defect) => defect.id === defectId ? { ...defect, status } : defect);
+      return { ...current, defects, summary: { ...current.summary, open: defects.filter((defect) => defect.status === 'open').length } };
+    });
+    setScreen('issues');
+  }
 
   return (
     <View style={styles.container}>
@@ -60,63 +45,72 @@ export default function HomeScreen() {
           <Text style={styles.workspace}>Noelle&apos;s Cafe</Text>
         </View>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          <View style={styles.titleRow}>
-            <View>
-              <Text style={styles.eyebrow}>MONDAY, 12 SEPTEMBER</Text>
-              <Text style={styles.title}>Issues</Text>
-              <Text style={styles.subtitle}>{issues.length - resolved.length} issues need attention</Text>
-            </View>
-            <View style={styles.countBadge}>
-              <Text style={styles.countText}>{issues.length - resolved.length}</Text>
-            </View>
-          </View>
-
-          <View style={styles.summaryCard}>
-            <View>
-              <Text style={styles.summaryLabel}>ESTIMATED ANNUAL IMPACT</Text>
-              <Text style={styles.summaryValue}>-$9,550</Text>
-            </View>
-            <Text style={styles.summaryHint}>across 3 channels</Text>
-          </View>
-
-          <View style={styles.workflowCard}>
-            <Text style={styles.workflowTitle}>WORKFLOW STATUS</Text>
-            <View style={styles.workflowLine}>
-              <View style={styles.workflowStep}><View style={styles.workflowDotDone} /><Text style={styles.workflowText}>Capture</Text></View>
-              <View style={styles.workflowConnectorDone} />
-              <View style={styles.workflowStep}><View style={styles.workflowDotDone} /><Text style={styles.workflowText}>Reconcile</Text></View>
-              <View style={styles.workflowConnector} />
-              <View style={styles.workflowStep}><View style={styles.workflowDotActive} /><Text style={styles.workflowTextActive}>Review</Text></View>
-              <View style={styles.workflowConnector} />
-              <View style={styles.workflowStep}><View style={styles.workflowDot} /><Text style={styles.workflowText}>Approve</Text></View>
-            </View>
-          </View>
-
-          <Text style={styles.sectionLabel}>REVIEW QUEUE</Text>
-          {issues.map((issue) => {
-            const isResolved = resolved.includes(issue.title);
-            return (
-              <View key={issue.title} style={[styles.issueCard, isResolved && styles.resolvedCard]}>
-                <View style={[styles.issueStripe, { backgroundColor: severityColor[issue.severity] }]} />
-                <View style={styles.issueBody}>
-                  <View style={styles.issueTopline}>
-                    <Text style={[styles.amount, { color: severityColor[issue.severity] }]}>{issue.amount}</Text>
-                    {!isResolved && <Text style={styles.newLabel}>NEW</Text>}
-                  </View>
-                  <Text style={styles.issueTitle}>{issue.title}</Text>
-                  <Text style={styles.issueDetail}>{issue.detail}</Text>
+          {screen === 'import' ? (
+            <MenuImportScreen
+              onBack={() => setScreen('issues')}
+              onComplete={(nextReport) => { setReport(nextReport); setScreen('issues'); }}
+            />
+          ) : screen === 'detail' ? (
+            activeDefect ? <DefectDetail defect={activeDefect} onBack={() => setScreen('issues')} onResolve={(status) => updateDefectStatus(activeDefect.id, status)} /> : null
+          ) : (
+            <>
+              <View style={styles.titleRow}>
+                <View>
+                  <Text style={styles.eyebrow}>MONDAY, 12 SEPTEMBER</Text>
+                  <Text style={styles.title}>Issues</Text>
+                  {report ? <Text style={styles.subtitle}>{issuesNeedingAttention} issues need attention</Text> : null}
+                </View>
+                <View style={styles.titleActions}>
+                  {report ? <View style={styles.countBadge}><Text style={styles.countText}>{issuesNeedingAttention}</Text></View> : null}
                   <Pressable
                     accessibilityRole="button"
-                    onPress={() => setResolved((current) => isResolved ? current.filter((item) => item !== issue.title) : [...current, issue.title])}
-                    style={({ pressed }) => [styles.actionButton, pressed && styles.pressedButton]}
+                    accessibilityLabel="Import CSV"
+                    onPress={() => setScreen('import')}
+                    style={({ pressed }) => [styles.importButton, pressed && styles.pressedButton]}
                   >
-                    <Text style={styles.actionText}>{isResolved ? 'Restore' : issue.action}</Text>
+                    <Text style={styles.importIcon}>↑</Text>
+                    <Text style={styles.importButtonText}>Import CSV</Text>
                   </Pressable>
                 </View>
               </View>
-            );
-          })}
-          <Text style={styles.footerNote}>Last checked today at 9:14am · Data synced from menu channels</Text>
+
+              {report ? (
+                <>
+                  <Text style={styles.sectionLabel}>RECONCILIATION RESULTS</Text>
+                  {report.defects.length === 0 ? (
+                    <View style={styles.emptyState}><Text style={styles.emptyTitle}>No inconsistencies found</Text></View>
+                  ) : report.defects.map((defect) => (
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={`${defect.menuItemName}, ${defectNames[defect.defectType]}. View details.`}
+                      key={defect.id}
+                      onPress={() => { setActiveDefectId(defect.id); setScreen('detail'); }}
+                      style={({ pressed }) => [styles.issueCard, defect.status !== 'open' && styles.resolvedCard, pressed && styles.pressedButton]}
+                    >
+                      <View style={[styles.issueStripe, { backgroundColor: severityColor[defect.severity] }]} />
+                      <View style={styles.issueBody}>
+                        <View style={styles.issueTopline}>
+                          <Text style={[styles.amount, { color: severityColor[defect.severity] }]}>{defectNames[defect.defectType]}</Text>
+                          <Text style={styles.newLabel}>{defect.status === 'open' ? defect.severity.toUpperCase() : defect.status.toUpperCase()}</Text>
+                        </View>
+                        <Text style={styles.issueTitle}>{defect.menuItemName}{defect.sizeName ? ` · ${defect.sizeName}` : ''}</Text>
+                        <Text style={styles.issueDetail}>{defect.message}</Text>
+                        <View style={styles.actionButton}><Text style={styles.actionText}>View evidence</Text></View>
+                      </View>
+                    </Pressable>
+                  ))}
+                </>
+              ) : (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyTitle}>No reconciliation report yet</Text>
+                  <Text style={styles.emptyDetail}>Import one or more menu capture CSV files to identify inconsistencies across the selected channels.</Text>
+                  <Pressable accessibilityRole="button" onPress={() => setScreen('import')} style={styles.actionButton}>
+                    <Text style={styles.actionText}>Import CSV</Text>
+                  </Pressable>
+                </View>
+              )}
+            </>
+          )}
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -161,6 +155,33 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     marginBottom: 18,
+  },
+  titleActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  importButton: {
+    minHeight: 36,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    borderColor: '#CBD3DB',
+    borderWidth: 1,
+    borderRadius: 6,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 9,
+  },
+  importIcon: {
+    color: '#15283F',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  importButtonText: {
+    color: '#15283F',
+    fontSize: 10,
+    fontWeight: '700',
   },
   eyebrow: {
     color: '#718096',
@@ -318,5 +339,27 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     textAlign: 'center',
     marginTop: 10,
+  },
+  emptyState: {
+    alignItems: 'center',
+    borderColor: '#CBD3DB',
+    borderRadius: 10,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    padding: 24,
+    backgroundColor: '#FFFFFF',
+  },
+  emptyTitle: {
+    color: '#15283F',
+    fontSize: 16,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  emptyDetail: {
+    color: '#718096',
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: 7,
+    textAlign: 'center',
   },
 });
